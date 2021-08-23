@@ -1,3 +1,5 @@
+import { User } from './user.service'
+
 export class OrderPlacementItem {
   productId: string
   quantity: number
@@ -5,14 +7,6 @@ export class OrderPlacementItem {
 
 export class OrderPlacement {
   items: OrderPlacementItem[]
-}
-
-export class User {
-  id: string
-
-  username: string
-
-  orders: any[]
 }
 
 export class CreateProductDto {

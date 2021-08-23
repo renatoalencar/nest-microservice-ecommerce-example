@@ -1,15 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 import { UserModule } from './user.module';
 
 async function bootstrap() {
   const user = await NestFactory.createMicroservice<MicroserviceOptions>(
     UserModule,
     {
-      transport: Transport.RMQ,
+      transport: Transport.GRPC,
       options: {
-        urls: ['amqp://guest:guest@localhost:5672'],
-        queue: 'users_queue',
+        package: 'user',
+        protoPath: join(__dirname, 'user.proto')
       },
     }
   )

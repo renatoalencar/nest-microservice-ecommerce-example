@@ -1,16 +1,28 @@
-import { Body, Controller, Inject, Post, Get, Delete, Param } from "@nestjs/common";
-import { ClientProxy } from "@nestjs/microservices";
+import { Body, Controller, Inject, Post, Get, Delete, Param, OnModuleInit } from "@nestjs/common";
+import { ClientGrpc, ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom, Observable } from "rxjs";
-import { OrderPlacementItem, User, CreateProductDto, Product, Order } from "./api.dto";
+import { OrderPlacementItem, CreateProductDto, Product, Order } from "./api.dto";
 import { CurrentUser } from "./user.decorators";
+import { UserService, User } from "./user.service";
 
 @Controller('user')
-export class UserController {
-  constructor(@Inject('user_service') private userService: ClientProxy) { }
+export class UserController implements OnModuleInit {
+  private userService: UserService;
+
+  constructor(@Inject('user_service') private client: ClientGrpc) { }
+
+  onModuleInit() {
+    this.userService = this.client.getService<UserService>('UserService')
+  }
 
   @Post('sign_up')
   signUp(@Body('username') username: string): Observable<User> {
-    return this.userService.send('user.sign_up', username)
+    return this.userService.signUp({ username })
+  }
+
+  @Get('me')
+  getUser(@CurrentUser() user: User): User {
+    return user
   }
 }
 

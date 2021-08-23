@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { resolve } from "path";
 import { OrderController, ProductController, UserController } from "./api.controller";
 
 @Module({
@@ -19,10 +20,10 @@ import { OrderController, ProductController, UserController } from "./api.contro
     ClientsModule.register([
       {
         name: 'user_service',
-        transport: Transport.RMQ,
+        transport: Transport.GRPC,
         options: {
-          urls: ['amqp://guest:guest@localhost:5672'],
-          queue: 'users_queue',
+          package: 'user',
+          protoPath: resolve('./apps/user/user.proto'),
         },
       },
       {

@@ -1,19 +1,27 @@
 import { Controller } from '@nestjs/common'
-import { MessagePattern } from '@nestjs/microservices'
+import { GrpcMethod } from '@nestjs/microservices'
 import { User } from './user.entity'
 import { UserService } from './user.service'
+
+interface CreateUser {
+  username: string
+}
+
+interface Auth {
+  id: string
+}
 
 @Controller()
 export class UsersController {
   constructor(private readonly userService: UserService) { }
 
-  @MessagePattern('user.sign_up')
-  signUp(username: string): Promise<User> {
-    return this.userService.createUser(username)
+  @GrpcMethod('UserService', 'SignUp')
+  signUp(data: CreateUser): Promise<User> {
+    return this.userService.createUser(data.username)
   }
 
-  @MessagePattern('user.authenticate')
-  authenticate(id: string): Promise<User> {
-    return this.userService.findById(id)
+  @GrpcMethod('UserService', 'Authenticate')
+  authenticate(data: Auth): Promise<User> {
+    return this.userService.findById(data.id)
   }
 }
